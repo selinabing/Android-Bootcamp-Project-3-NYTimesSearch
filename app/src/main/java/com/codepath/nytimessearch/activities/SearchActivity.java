@@ -1,21 +1,20 @@
 package com.codepath.nytimessearch.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridView;
 
 import com.codepath.nytimessearch.Article;
 import com.codepath.nytimessearch.ArticleArrayAdapter;
+import com.codepath.nytimessearch.EndlessRecyclerViewScrollListener;
 import com.codepath.nytimessearch.R;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -32,7 +31,7 @@ import cz.msebera.android.httpclient.Header;
 public class SearchActivity extends AppCompatActivity {
 
     EditText etQuery;
-    GridView gvResults;
+    RecyclerView rvArticles;
     Button btnSearch;
 
     ArrayList<Article> articles;
@@ -45,33 +44,28 @@ public class SearchActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        RecyclerView a = (RecyclerView) findViewById(R.id.)
-        setupViews();
-    }
+        rvArticles = (RecyclerView) findViewById(R.id.rvArticles);
 
-    public void setupViews() {
         etQuery = (EditText) findViewById(R.id.etQuery);
-        gvResults = (GridView) findViewById(R.id.gvResults);
         btnSearch = (Button) findViewById(R.id.btnSearch);
         articles = new ArrayList<>();
-        adapter = new ArticleArrayAdapter(articles);
-        gvResults.setAdapter(adapter);
 
-        // hook up listener for grid click
-        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        adapter = new ArticleArrayAdapter(articles);
+
+        rvArticles.setLayoutManager(new StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL));
+
+        rvArticles.setAdapter(adapter);
+
+        //set layoutmanager before adapter
+
+        rvArticles.setHasFixedSize(true);
+
+        rvArticles.addOnScrollListener(new EndlessRecyclerViewScrollListener((StaggeredGridLayoutManager)rvArticles.getLayoutManager()) {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // create an intent to display article
-                Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
-                // display the article
-                Article article = articles.get(position);
-                // pass in article to intent
-                i.putExtra("article", article);
-                // launch activity
-                startActivity(i);
+            public void onLoadMore(int page, int totalItemsCount) {
+                requestSearch(page);
             }
         });
-
     }
 
     @Override
@@ -97,24 +91,31 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void onArticleSearch(View view) {
-        String query = etQuery.getText().toString();
+        articles.clear();
+        adapter.notifyDataSetChanged();
+        requestSearch(0);
+        //Toast.makeText(this, "searching for "+query, Toast.LENGTH_LONG).show();
+    }
 
+    public void requestSearch(int page) {
+        String query = etQuery.getText().toString();
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
         RequestParams params = new RequestParams();
         params.put("api-key","eb8e15941677443286fe314e6fe7ebde");
-        params.put("page",0);
+        params.put("page",page);
         params.put("q",query);
 
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.d("DEBUG", response.toString());
+                //Log.d("DEBUG", response.toString());
                 JSONArray articleJsonResults = null;
 
                 try {
                     articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
                     articles.addAll(Article.fromJSONArray(articleJsonResults));
+                    //adapter.notifyItemRangeChanged(adapter.getItemCount(),articles.size()-1);
                     adapter.notifyDataSetChanged();
                     //adapter.addAll(Articles.fromJSONArray(articleJsonResults));
                     Log.d("DEBUG", articles.toString());
@@ -124,6 +125,5 @@ public class SearchActivity extends AppCompatActivity {
                 }
             }
         });
-        //Toast.makeText(this, "searching for "+query, Toast.LENGTH_LONG).show();
     }
 }

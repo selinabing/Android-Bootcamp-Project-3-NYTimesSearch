@@ -1,6 +1,7 @@
 package com.codepath.nytimessearch;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.codepath.nytimessearch.activities.ArticleActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -18,9 +20,7 @@ import java.util.List;
  */
 public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapter.ViewHolder> {
 
-    Context context;
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView tvTitle;
         ImageView ivImage;
 
@@ -28,8 +28,21 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
             super(itemView);
             tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
             ivImage = (ImageView) itemView.findViewById(R.id.ivImage);
+            tvTitle.setOnClickListener(this);
+            ivImage.setOnClickListener(this);
         }
 
+        @Override
+        public void onClick(View v) {
+            // create an intent to display article
+            Intent i = new Intent(v.getContext(), ArticleActivity.class);
+            // display the article
+            Article article = articles.get(getLayoutPosition());
+            // pass in article to intent
+            i.putExtra("article", article);
+            // launch activity
+            v.getContext().startActivity(i);
+        }
     }
 
     private List<Article> articles;
@@ -40,12 +53,12 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
 
     @Override
     public ArticleArrayAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        context = parent.getContext();
+        Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View contactView = inflater.inflate(R.layout.item_article_result, parent, false);
+        View articleView = inflater.inflate(R.layout.item_article_result, parent, false);
 
-        ViewHolder viewHolder = new ViewHolder(contactView);
+        ViewHolder viewHolder = new ViewHolder(articleView);
         return viewHolder;
     }
 
@@ -61,7 +74,9 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
         ivImage.setImageResource(0);
         String thumbnail = article.getThumbNail();
         if(!TextUtils.isEmpty(thumbnail)) {
-            Picasso.with(context).load(thumbnail).into(ivImage);
+            Picasso.with(ivImage.getContext()).load(thumbnail).placeholder(R.drawable.placeholder_img).into(ivImage);
+        } else {
+            Picasso.with(ivImage.getContext()).load(R.drawable.not_available_placeholder_img).resize(75,50).placeholder(R.drawable.placeholder_img).into(ivImage);
         }
     }
 
