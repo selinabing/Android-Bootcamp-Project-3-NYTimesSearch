@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.codepath.nytimessearch.FilterActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:text="newstype"
+        android:id="@+id/tvNewsType"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginBottom="20dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="sortorder"
+        android:id="@+id/tvSortOrder"
+        android:layout_below="@id/tvNewsType"
+        android:layout_alignLeft="@id/tvNewsType"
+        android:layout_alignStart="@id/tvNewsType" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="date"
+        android:id="@+id/tvDate"
+        android:layout_below="@id/tvSortOrder"
+        android:layout_alignLeft="@id/tvSortOrder"
+        android:layout_alignStart="@id/tvSortOrder"
+        android:layout_marginTop="20dp"/>
+
+
+    <Spinner
+        android:id="@+id/spnrSortOrder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:entries="@array/sort_array"
+        android:prompt="@string/promptSortOrder"
+        android:layout_below="@id/tvNewsType"
+        android:layout_alignLeft="@+id/cbPolitics" />
+
+    <CheckBox android:id="@id/cbPolitics"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/politics"
+        android:onClick="onCheckboxClicked"
+        android:layout_toRightOf="@id/tvNewsType"
+        android:layout_toEndOf="@id/tvNewsType"
+        android:layout_alignBaseline="@id/tvNewsType"/>
+
+    <CheckBox android:id="@+id/cbTechnology"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/technology"
+        android:onClick="onCheckboxClicked"
+        android:layout_alignTop="@id/tvNewsType"
+        android:layout_toRightOf="@id/cbPolitics"
+        android:layout_alignBaseline="@id/tvNewsType" />
+
+    <CheckBox android:id="@+id/cbFinancial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/financial"
+        android:onClick="onCheckboxClicked"
+        android:layout_alignBaseline="@id/tvNewsType"
+        android:layout_toRightOf="@id/cbTechnology"
+        android:layout_alignTop="@id/tvNewsType" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="submit"
+        android:id="@+id/btnSubmitFilter"
+        android:onClick="onSubmitFilter"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="20dp"/>
+
+    <DatePicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/dpFilterDate"
+        android:layout_alignLeft="@id/cbPolitics"
+        android:layout_below="@id/spnrSortOrder"
+        style="@android:style/Widget.DatePicker"
+        android:onClick="showDatePickerDialog"/>
+
+</RelativeLayout>

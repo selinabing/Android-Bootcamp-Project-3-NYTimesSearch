@@ -76,7 +76,7 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
         if(!TextUtils.isEmpty(thumbnail)) {
             Picasso.with(ivImage.getContext()).load(thumbnail).placeholder(R.drawable.placeholder_img).into(ivImage);
         } else {
-            Picasso.with(ivImage.getContext()).load(R.drawable.not_available_placeholder_img).resize(75,50).placeholder(R.drawable.placeholder_img).into(ivImage);
+            Picasso.with(ivImage.getContext()).load(R.drawable.not_available_placeholder_img).resize(100,65).placeholder(R.drawable.placeholder_img).into(ivImage);
         }
     }
 

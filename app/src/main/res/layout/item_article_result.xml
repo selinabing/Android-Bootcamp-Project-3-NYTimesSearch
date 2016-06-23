@@ -4,7 +4,7 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:layout_width="75dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:id="@+id/ivImage"
         android:scaleType="fitStart"
@@ -16,6 +16,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/tvTitle"
         android:text="TextView"
-        android:maxLines="2"
+        android:maxLines="3"
         android:ellipsize="end"/>
 </LinearLayout>

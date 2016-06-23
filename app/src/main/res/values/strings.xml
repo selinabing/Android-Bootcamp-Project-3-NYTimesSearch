@@ -4,4 +4,8 @@
     <string name="enterSearchQuery">Enter search query</string>
     <string name="search">Search</string>
     <string name="title_activity_article">ArticleActivity</string>
+    <string name="promptSortOrder">Sort by...</string>
+    <string name="politics">Politics</string>
+    <string name="financial">Finance</string>
+    <string name="technology">Tech</string>
 </resources>
