@@ -12,14 +12,22 @@ import android.widget.Spinner;
 
 import java.util.Calendar;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class FilterActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener{
 
+    @BindView(R.id.cbPolitics) CheckBox cbPolitics;
+    @BindView(R.id.cbFinancial) CheckBox cbFinancial;
+    @BindView(R.id.cbTechnology) CheckBox cbTechnology;
+    @BindView(R.id.spnrSortOrder) Spinner spnrSortOrder;
+    @BindView(R.id.dpFilterDate) DatePicker dpFilterDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
-
+        ButterKnife.bind(this);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -41,14 +49,7 @@ public class FilterActivity extends AppCompatActivity implements DatePickerDialo
     }
 
     public void onSubmitFilter(View view) {
-        CheckBox cbPolitics = (CheckBox) findViewById(R.id.cbPolitics);
-        CheckBox cbFinancial = (CheckBox) findViewById(R.id.cbFinancial);
-        CheckBox cbTechnology = (CheckBox) findViewById(R.id.cbTechnology);
-
-        Spinner spnrSortOrder = (Spinner) findViewById(R.id.spnrSortOrder);
         String sortValue = spnrSortOrder.getSelectedItem().toString();
-
-        DatePicker dpFilterDate = (DatePicker) findViewById(R.id.dpFilterDate);
 
         Intent i = new Intent();
         i.putExtra("sort value", sortValue);

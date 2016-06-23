@@ -17,27 +17,32 @@ import android.widget.CheckBox;
 import com.codepath.nytimessearch.Article;
 import com.codepath.nytimessearch.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class ArticleActivity extends AppCompatActivity {
+
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.wvArticle) WebView wvArticle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         Article article = (Article) getIntent().getSerializableExtra("article");
-        WebView webView = (WebView) findViewById(R.id.wvArticle);
-        webView.setWebViewClient(new WebViewClient() {
+        wvArticle.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
                 return true;
             }
         });
-        webView.loadUrl(article.getWebUrl());
+        wvArticle.loadUrl(article.getWebUrl());
 
         getSupportActionBar().setTitle(article.getHeadline());
 
@@ -59,7 +64,6 @@ public class ArticleActivity extends AppCompatActivity {
         Intent shareIntent = new Intent (Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
 
-        WebView wvArticle = (WebView) findViewById(R.id.wvArticle);
         shareIntent.putExtra(Intent.EXTRA_TEXT, wvArticle.getUrl());
 
         miShare.setShareIntent(shareIntent);

@@ -15,21 +15,28 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by selinabing on 6/20/16.
  */
 public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapter.ViewHolder> {
 
+
+
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView tvTitle;
-        ImageView ivImage;
+        @BindView(R.id.tvTitle) TextView tvTitle;
+        @BindView(R.id.ivImage) ImageView ivImage;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
-            tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
-            ivImage = (ImageView) itemView.findViewById(R.id.ivImage);
+            ButterKnife.bind(this,itemView);
             tvTitle.setOnClickListener(this);
             ivImage.setOnClickListener(this);
+
         }
 
         @Override

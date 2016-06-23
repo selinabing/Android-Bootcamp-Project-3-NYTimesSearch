@@ -28,12 +28,13 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity {
 
     //EditText etQuery;
-    RecyclerView rvArticles;
     //Button btnSearch;
     RequestParams params;
     String searchQuery;
@@ -46,14 +47,15 @@ public class SearchActivity extends AppCompatActivity {
     ArrayList<Article> articles;
     ArticleArrayAdapter adapter;
 
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.rvArticles) RecyclerView rvArticles;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-
-        rvArticles = (RecyclerView) findViewById(R.id.rvArticles);
 
         //etQuery = (EditText) findViewById(R.id.etQuery);
         //btnSearch = (Button) findViewById(R.id.btnSearch);
