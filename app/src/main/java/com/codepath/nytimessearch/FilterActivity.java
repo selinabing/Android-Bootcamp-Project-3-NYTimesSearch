@@ -53,10 +53,10 @@ public class FilterActivity extends AppCompatActivity implements DatePickerDialo
         Intent i = new Intent();
         i.putExtra("sort value", sortValue);
         String date = dpFilterDate.getYear()+"";
-        if (dpFilterDate.getMonth()<10)
-            date=date+"0"+dpFilterDate.getMonth();
+        if (dpFilterDate.getMonth()<9)
+            date=date+"0"+(dpFilterDate.getMonth()+1);
         else
-            date=date+dpFilterDate.getMonth();
+            date=date+(dpFilterDate.getMonth()+1);
         if (dpFilterDate.getDayOfMonth()<10)
             date=date+"0"+dpFilterDate.getDayOfMonth();
         else
