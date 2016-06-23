@@ -74,7 +74,7 @@ public class SearchActivity extends AppCompatActivity {
         rvArticles.addOnScrollListener(new EndlessRecyclerViewScrollListener((StaggeredGridLayoutManager)rvArticles.getLayoutManager()) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                Log.d("DEBUG","onLoadMore: "+searchQuery);
+                Log.d("DEBUG","onLoadMore: "+searchQuery+"/"+page);
                 params = new RequestParams();
                 params.put("api-key", "eb8e15941677443286fe314e6fe7ebde");
                 params.put("page", page);
@@ -225,8 +225,6 @@ public class SearchActivity extends AppCompatActivity {
                 filterNewsType+=" "+"\"Financial\"";
             if (data.getBooleanExtra("tech",false))
                 filterNewsType+=" "+"\"Technology\"";
-
-            Log.d("DEBUG","this is filter fq: "+filterNewsType);
 
             articles.clear();
             adapter.notifyDataSetChanged();

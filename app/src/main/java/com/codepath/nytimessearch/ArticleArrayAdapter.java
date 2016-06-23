@@ -10,8 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.codepath.nytimessearch.activities.ArticleActivity;
-import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
 
@@ -83,9 +83,9 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
         ivImage.setImageResource(0);
         String thumbnail = article.getThumbNail();
         if(!TextUtils.isEmpty(thumbnail)) {
-            Picasso.with(ivImage.getContext()).load(thumbnail).placeholder(R.drawable.placeholder_img).into(ivImage);
+            Glide.with(ivImage.getContext()).load(thumbnail).placeholder(R.drawable.placeholder_img).fitCenter().into(ivImage);
         } else {
-            Picasso.with(ivImage.getContext()).load(R.drawable.not_available_placeholder_img).resize(100,65).placeholder(R.drawable.placeholder_img).into(ivImage);
+            Glide.with(ivImage.getContext()).load(R.drawable.not_available_placeholder_img).placeholder(R.drawable.placeholder_img).fitCenter().into(ivImage);
         }
     }
 
