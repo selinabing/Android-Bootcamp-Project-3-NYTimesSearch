@@ -13,6 +13,8 @@ import android.widget.TextView;
 import com.codepath.nytimessearch.activities.ArticleActivity;
 import com.squareup.picasso.Picasso;
 
+import org.parceler.Parcels;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -46,7 +48,7 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
             // display the article
             Article article = articles.get(getLayoutPosition());
             // pass in article to intent
-            i.putExtra("article", article);
+            i.putExtra("article", Parcels.wrap(article));
             // launch activity
             v.getContext().startActivity(i);
         }
