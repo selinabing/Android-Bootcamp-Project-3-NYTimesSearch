@@ -38,7 +38,10 @@ public class SearchActivity extends AppCompatActivity {
     RequestParams params;
     String searchQuery;
     final int REQUEST_CODE_FILTER = 100;
-
+    boolean isFiltered = false;
+    String filterNewsType = "";
+    String beginDate;
+    String sortValue;
 
     ArrayList<Article> articles;
     ArticleArrayAdapter adapter;
@@ -71,10 +74,16 @@ public class SearchActivity extends AppCompatActivity {
             public void onLoadMore(int page, int totalItemsCount) {
                 Log.d("DEBUG","onLoadMore: "+searchQuery);
                 params = new RequestParams();
-                params.put("api-key","eb8e15941677443286fe314e6fe7ebde");
-                params.put("page",page);
-                params.put("q",searchQuery);
-                requestSearch(params,page);
+                params.put("api-key", "eb8e15941677443286fe314e6fe7ebde");
+                params.put("page", page);
+                params.put("q", searchQuery);
+                if (isFiltered) {
+                    params.put("begin_date",beginDate);
+                    params.put("sort",sortValue);
+                    params.put("fq",String.format("news_desk:(%s)",filterNewsType));
+                } else {
+                    requestSearch(params, page);
+                }
             }
         });
     }
@@ -98,6 +107,7 @@ public class SearchActivity extends AppCompatActivity {
                 searchView.clearFocus();
                 //rvArticles.clearOnScrollListeners();
                 //rvArticles.addOnScrollListener();
+                isFiltered = false;
                 articles.clear();
                 adapter.notifyDataSetChanged();
 
@@ -198,17 +208,15 @@ public class SearchActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_FILTER && resultCode == RESULT_OK) {
             //searchQuery = data.getExtras().getString("new query").toString();
 
+            isFiltered = true;
             params = new RequestParams();
             params.put("api-key","eb8e15941677443286fe314e6fe7ebde");
             params.put("page",0);
             params.put("q",searchQuery);
-            params.put("begin_date",data.getStringExtra("date filter"));
-            params.put("sort",data.getStringExtra("sort value"));
-            String filterNewsType = "";
+            beginDate = data.getStringExtra("date filter");
+            sortValue = data.getStringExtra("sort value");
 
-            articles.clear();
-            adapter.notifyDataSetChanged();
-
+            filterNewsType = "";
             if (data.getBooleanExtra("politics",false))
                 filterNewsType+="\"Politics\"";
             if (data.getBooleanExtra("financial",false))
@@ -217,6 +225,11 @@ public class SearchActivity extends AppCompatActivity {
                 filterNewsType+=" "+"\"Technology\"";
 
             Log.d("DEBUG","this is filter fq: "+filterNewsType);
+
+            articles.clear();
+            adapter.notifyDataSetChanged();
+            params.put("begin_date",beginDate);
+            params.put("sort",sortValue);
             params.put("fq",String.format("news_desk:(%s)",filterNewsType));
             requestSearch(params,0);
 
