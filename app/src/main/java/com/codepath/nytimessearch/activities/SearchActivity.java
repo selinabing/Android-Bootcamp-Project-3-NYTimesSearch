@@ -1,7 +1,7 @@
 package com.codepath.nytimessearch.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import com.codepath.nytimessearch.Article;
 import com.codepath.nytimessearch.ArticleArrayAdapter;
 import com.codepath.nytimessearch.EndlessRecyclerViewScrollListener;
+import com.codepath.nytimessearch.FilterDialogFragment;
 import com.codepath.nytimessearch.R;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -31,7 +32,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity implements FilterDialogFragment.FilterDialogListener{
 
     RequestParams params;
     String searchQuery;
@@ -47,6 +48,7 @@ public class SearchActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.rvArticles) RecyclerView rvArticles;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -156,9 +158,11 @@ public class SearchActivity extends AppCompatActivity {
         filterItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Intent i = new Intent(SearchActivity.this, FilterActivity.class);
+                /*Intent i = new Intent(SearchActivity.this, FilterActivity.class);
                 i.putExtra("query",searchQuery);
                 startActivityForResult(i,REQUEST_CODE_FILTER);
+                */
+                showFilterDialog();
                 return true;
             }
         });
@@ -166,6 +170,11 @@ public class SearchActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    private void showFilterDialog(){
+        FragmentManager fm = getSupportFragmentManager();
+        FilterDialogFragment filterDF = FilterDialogFragment.newInstance("Filter");
+        filterDF.show(fm,"filter_fragment_dialog");
+    }
 
 
     @Override
@@ -218,31 +227,26 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE_FILTER && resultCode == RESULT_OK) {
-            isFiltered = true;
+    public void onFinishDialog(ArrayList<String> res) {
+        isFiltered = true;
+        articles.clear();
+        adapter.notifyDataSetChanged();
+
+        if(res==null) {
+            generateTopStories();
+        } else {
+            beginDate = res.get(0);
+            sortValue = res.get(2);
+            filterNewsType = String.format("news_desk:(%s)", res.get(1));
+
             params = new RequestParams();
-            params.put("api-key","eb8e15941677443286fe314e6fe7ebde");
-            params.put("page",0);
-            params.put("q",searchQuery);
-            beginDate = data.getStringExtra("date filter");
-            sortValue = data.getStringExtra("sort value");
-
-            filterNewsType = "";
-            if (data.getBooleanExtra("politics",false))
-                filterNewsType+="\"Politics\"";
-            if (data.getBooleanExtra("financial",false))
-                filterNewsType+=" "+"\"Financial\"";
-            if (data.getBooleanExtra("tech",false))
-                filterNewsType+=" "+"\"Technology\"";
-
-            articles.clear();
-            adapter.notifyDataSetChanged();
-            params.put("begin_date",beginDate);
-            params.put("sort",sortValue);
-            params.put("fq",String.format("news_desk:(%s)",filterNewsType));
-            requestSearch(params,0);
+            params.put("api-key", "eb8e15941677443286fe314e6fe7ebde");
+            params.put("page", 0);
+            params.put("q", searchQuery);
+            params.put("begin_date", beginDate);
+            params.put("sort", sortValue);
+            params.put("fq", filterNewsType);
+            requestSearch(params, 0);
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 }
