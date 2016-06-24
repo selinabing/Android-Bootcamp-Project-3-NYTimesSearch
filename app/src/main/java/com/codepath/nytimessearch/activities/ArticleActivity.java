@@ -9,10 +9,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.CheckBox;
 
 import com.codepath.nytimessearch.Article;
 import com.codepath.nytimessearch.R;
@@ -70,27 +68,5 @@ public class ArticleActivity extends AppCompatActivity {
 
         miShare.setShareIntent(shareIntent);
         return super.onCreateOptionsMenu(menu);
-    }
-
-    public void onCheckboxClicked(View view) {
-        // Is the view now checked?
-        boolean checked = ((CheckBox) view).isChecked();
-
-        // Check which checkbox was clicked
-/*
-        switch(view.getId()) {
-            case R.id.cbFinancial:
-                if (checked)
-                // Put some meat on the sandwich
-                else
-                // Remove the meat
-                break;
-            case R.id.checkbox_cheese:
-                if (checked)
-                // Cheese me
-                else
-                // I'm lactose intolerant
-                break;
-        }*/
     }
 }

@@ -1,4 +1,4 @@
-package com.codepath.nytimessearch;
+package com.codepath.nytimessearch.activities;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -10,6 +10,9 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.Spinner;
+
+import com.codepath.nytimessearch.DatePickerFragment;
+import com.codepath.nytimessearch.R;
 
 import java.util.Calendar;
 

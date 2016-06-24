@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import com.codepath.nytimessearch.Article;
 import com.codepath.nytimessearch.ArticleArrayAdapter;
 import com.codepath.nytimessearch.EndlessRecyclerViewScrollListener;
-import com.codepath.nytimessearch.FilterActivity;
 import com.codepath.nytimessearch.R;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -34,8 +33,6 @@ import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity {
 
-    //EditText etQuery;
-    //Button btnSearch;
     RequestParams params;
     String searchQuery;
     final int REQUEST_CODE_FILTER = 100;
@@ -43,13 +40,13 @@ public class SearchActivity extends AppCompatActivity {
     String filterNewsType = "";
     String beginDate;
     String sortValue;
+    boolean isTopStory;
 
     ArrayList<Article> articles;
     ArticleArrayAdapter adapter;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.rvArticles) RecyclerView rvArticles;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,20 +54,17 @@ public class SearchActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        //etQuery = (EditText) findViewById(R.id.etQuery);
-        //btnSearch = (Button) findViewById(R.id.btnSearch);
         articles = new ArrayList<>();
-
         adapter = new ArticleArrayAdapter(articles);
 
-        rvArticles.setLayoutManager(new StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL));
+        isTopStory=true;
+        adapter.setIsTopStory(isTopStory);
 
+        rvArticles.setLayoutManager(new StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL));
         rvArticles.setAdapter(adapter);
 
         //set layoutmanager before adapter
-
         rvArticles.setHasFixedSize(true);
-
         rvArticles.addOnScrollListener(new EndlessRecyclerViewScrollListener((StaggeredGridLayoutManager)rvArticles.getLayoutManager()) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
@@ -78,17 +72,32 @@ public class SearchActivity extends AppCompatActivity {
                 params = new RequestParams();
                 params.put("api-key", "eb8e15941677443286fe314e6fe7ebde");
                 params.put("page", page);
-                params.put("q", searchQuery);
+                if(!isTopStory)
+                    params.put("q", searchQuery);
                 if (isFiltered) {
                     params.put("begin_date",beginDate);
                     params.put("sort",sortValue);
                     params.put("fq",String.format("news_desk:(%s)",filterNewsType));
-                } else {
-                    requestSearch(params, page);
                 }
+                requestSearch(params,page);
             }
         });
+
+        generateTopStories();
+
     }
+
+    public void generateTopStories(){
+        isTopStory=true;
+        adapter.setIsTopStory(isTopStory);
+        params = new RequestParams();
+        params.put("api-key", "eb8e15941677443286fe314e6fe7ebde");
+        params.put("page",0);
+        articles.clear();
+        adapter.notifyDataSetChanged();
+        requestSearch(params,0);
+        getSupportActionBar().setTitle("Top Stories of NYTimes");
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -96,7 +105,7 @@ public class SearchActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_search, menu);
 
-        MenuItem searchItem = menu.findItem(R.id.action_search);
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchItem.expandActionView();
         searchView.requestFocus();
@@ -104,12 +113,12 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextSubmit(String query) {
+                isTopStory=false;
+                adapter.setIsTopStory(isTopStory);
                 searchQuery=query;
-                Log.d("DEBUG","reached text submission");
                 searchView.clearFocus();
-                //rvArticles.clearOnScrollListeners();
-                //rvArticles.addOnScrollListener();
                 isFiltered = false;
+
                 articles.clear();
                 adapter.notifyDataSetChanged();
 
@@ -118,8 +127,7 @@ public class SearchActivity extends AppCompatActivity {
                 params.put("page",0);
                 params.put("q",searchQuery);
                 requestSearch(params,0);
-
-                //getSupportActionBar().setTitle(query);
+                getSupportActionBar().setTitle(query);
                 return true;
             }
 
@@ -128,6 +136,21 @@ public class SearchActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                searchView.clearFocus();
+                searchView.setFocusable(false);
+                searchView.onActionViewCollapsed();
+                searchItem.collapseActionView();
+
+                generateTopStories();
+                return true;
+            }
+        });
+
+
 
         MenuItem filterItem = menu.findItem(R.id.filter_search);
         filterItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -152,40 +175,29 @@ public class SearchActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         if (item.getItemId() == android.R.id.home)
             finish();
-/*
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-*/
         return super.onOptionsItemSelected(item);
     }
-/*
-    public void onArticleSearch(View view) {
-        articles.clear();
-        adapter.notifyDataSetChanged();
-        requestSearch(etQuery.getText().toString(),0);
-        //Toast.makeText(this, "searching for "+query, Toast.LENGTH_LONG).show();
-    }
-*/
 
     public void requestSearch(RequestParams params, int page) {
-        //String query = etQuery.getText().toString();
         AsyncHttpClient client = new AsyncHttpClient();
-        String url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
-
+        String url;
+        if (!isTopStory) {
+            url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
+        } else {
+            url = "https://api.nytimes.com/svc/topstories/v2/home.json";
+        }
 
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.d("DEBUG", "here"+response.toString());
                 JSONArray articleJsonResults = null;
 
                 try {
-                    articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
-                    articles.addAll(Article.fromJSONArray(articleJsonResults));
-                    //adapter.notifyItemRangeChanged(adapter.getItemCount(),articles.size()-1);
+                    if (isTopStory)
+                        articleJsonResults = response.getJSONArray("results");
+                    else
+                        articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
+                    articles.addAll(Article.fromJSONArray(articleJsonResults,isTopStory));
                     adapter.notifyDataSetChanged();
                     //adapter.addAll(Articles.fromJSONArray(articleJsonResults));
                     Log.d("DEBUG", "articles - "+articles.toString());
@@ -208,8 +220,6 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_FILTER && resultCode == RESULT_OK) {
-            //searchQuery = data.getExtras().getString("new query").toString();
-
             isFiltered = true;
             params = new RequestParams();
             params.put("api-key","eb8e15941677443286fe314e6fe7ebde");
@@ -232,7 +242,6 @@ public class SearchActivity extends AppCompatActivity {
             params.put("sort",sortValue);
             params.put("fq",String.format("news_desk:(%s)",filterNewsType));
             requestSearch(params,0);
-
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

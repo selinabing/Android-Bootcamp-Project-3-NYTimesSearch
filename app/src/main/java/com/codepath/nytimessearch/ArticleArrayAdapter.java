@@ -25,20 +25,18 @@ import butterknife.ButterKnife;
  */
 public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapter.ViewHolder> {
 
-
+    boolean isTopStory;
 
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.tvTitle) TextView tvTitle;
         @BindView(R.id.ivImage) ImageView ivImage;
 
-
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
             tvTitle.setOnClickListener(this);
             ivImage.setOnClickListener(this);
-
         }
 
         @Override
@@ -58,6 +56,7 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
 
     public ArticleArrayAdapter(List<Article> articles) {
         this.articles = articles;
+
     }
 
     @Override
@@ -93,6 +92,15 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
     public int getItemCount() {
         return articles.size();
     }
+
+    public void setIsTopStory(boolean isTopStory){
+        this.isTopStory=isTopStory;
+    }
+
+    public boolean getIsTopStory(){
+        return this.isTopStory;
+    }
+
 /*
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
