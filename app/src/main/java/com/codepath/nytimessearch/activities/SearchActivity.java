@@ -93,16 +93,27 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogFra
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                params = new RequestParams();
+                params.put("api-key", "eb8e15941677443286fe314e6fe7ebde");
+                params.put("page",0);
+                articles.clear();
+                adapter.notifyDataSetChanged();
                 if(isTopStory){
-                    params = new RequestParams();
-                    params.put("api-key", "eb8e15941677443286fe314e6fe7ebde");
-                    params.put("page",0);
-                    articles.clear();
-                    adapter.notifyDataSetChanged();
                     requestSearch(params,0);
-                    swipeContainer.setRefreshing(false);
-                    Toast.makeText(getApplicationContext(),"Refreshing...",Toast.LENGTH_SHORT).show();
+                } else {
+                    params.put("q", searchQuery);
+                    if(isFiltered){
+                        Log.d("DEBUG","reached1");
+                        params.put("begin_date",beginDate);
+                        params.put("sort",sortValue);
+                        params.put("fq",String.format("news_desk:(%s)",filterNewsType));
+                    }
+                    Log.d("DEBUG","reached2");
+                    requestSearch(params,0);
+                    Log.d("DEBUG","reached2");
                 }
+                Toast.makeText(getApplicationContext(),"Refreshing...",Toast.LENGTH_SHORT).show();
+                swipeContainer.setRefreshing(false);
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
@@ -174,8 +185,8 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogFra
                 searchView.setFocusable(false);
                 searchView.onActionViewCollapsed();
                 searchItem.collapseActionView();
-
-                generateTopStories();
+                if(!isTopStory)
+                    generateTopStories();
                 return true;
             }
         });
