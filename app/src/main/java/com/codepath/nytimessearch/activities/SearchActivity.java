@@ -3,6 +3,7 @@ package com.codepath.nytimessearch.activities;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.codepath.nytimessearch.Article;
 import com.codepath.nytimessearch.ArticleArrayAdapter;
@@ -48,6 +50,7 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogFra
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.rvArticles) RecyclerView rvArticles;
+    @BindView(R.id.swipeContainer) SwipeRefreshLayout swipeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +65,7 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogFra
         isTopStory=true;
         adapter.setIsTopStory(isTopStory);
 
-        rvArticles.setLayoutManager(new StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL));
+        rvArticles.setLayoutManager(new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL));
         rvArticles.setAdapter(adapter);
 
         //set layoutmanager before adapter
@@ -87,7 +90,32 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogFra
 
         generateTopStories();
 
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if(isTopStory){
+                    params = new RequestParams();
+                    params.put("api-key", "eb8e15941677443286fe314e6fe7ebde");
+                    params.put("page",0);
+                    articles.clear();
+                    adapter.notifyDataSetChanged();
+                    requestSearch(params,0);
+                    swipeContainer.setRefreshing(false);
+                    Toast.makeText(getApplicationContext(),"Refreshing...",Toast.LENGTH_SHORT).show();
+                }
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
     }
+
+
 
     public void generateTopStories(){
         isTopStory=true;

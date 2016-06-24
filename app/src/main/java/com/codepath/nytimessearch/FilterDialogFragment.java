@@ -61,6 +61,7 @@ public class FilterDialogFragment extends DialogFragment implements DatePickerDi
         cbFinancial.setOnClickListener(this);
         cbTechnology.setOnClickListener(this);
         cbPolitics.setOnClickListener(this);
+        getDialog().setTitle("Filter");
         return view;
     }
 

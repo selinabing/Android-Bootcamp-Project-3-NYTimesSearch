@@ -101,6 +101,17 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
         return this.isTopStory;
     }
 
+    // Clean all elements of the recycler
+    public void clear() {
+        articles.clear();
+        notifyDataSetChanged();
+    }
+
+    // Add a list of items
+    public void addAll(List<Article> artl) {
+        articles.addAll(artl);
+        notifyDataSetChanged();
+    }
 /*
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
