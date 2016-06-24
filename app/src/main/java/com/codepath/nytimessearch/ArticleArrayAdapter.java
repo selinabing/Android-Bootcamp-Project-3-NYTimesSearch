@@ -19,6 +19,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 /**
  * Created by selinabing on 6/20/16.
@@ -82,9 +83,9 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
         ivImage.setImageResource(0);
         String thumbnail = article.getThumbNail();
         if(!TextUtils.isEmpty(thumbnail)) {
-            Glide.with(ivImage.getContext()).load(thumbnail).placeholder(R.drawable.placeholder_img).fitCenter().into(ivImage);
+            Glide.with(ivImage.getContext()).load(thumbnail).bitmapTransform(new RoundedCornersTransformation(ivImage.getContext(),10,2)).placeholder(R.drawable.placeholder_img).into(ivImage);
         } else {
-            Glide.with(ivImage.getContext()).load(R.drawable.not_available_placeholder_img).placeholder(R.drawable.placeholder_img).fitCenter().into(ivImage);
+            Glide.with(ivImage.getContext()).load(R.drawable.not_available_placeholder_img).placeholder(R.drawable.placeholder_img).into(ivImage);
         }
     }
 
