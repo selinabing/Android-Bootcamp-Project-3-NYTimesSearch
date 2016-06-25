@@ -9,9 +9,9 @@ Time spent: around 22 hours spent in total
 
 The following **required** functionality is completed:
 
-* [x ] User can **search for news article** by specifying a query and launching a search. Search displays a grid of image results from the New York Times Search API.
-* [x ] User can **scroll down to see more articles**. The maximum number of articles is limited by the API search.
-* [x ] User can tap on any image in results to see the full text of article **full-screen**
+* [x] User can **search for news article** by specifying a query and launching a search. Search displays a grid of image results from the New York Times Search API.
+* [x] User can **scroll down to see more articles**. The maximum number of articles is limited by the API search.
+* [x] User can tap on any image in results to see the full text of article **full-screen**
 
 The following **optional** features are implemented:
 
